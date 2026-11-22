@@ -43,11 +43,14 @@ vs `device_google_grizzly` branch `17`.
 
 ## PR yang tersisa (jangan di-skip)
 
-1. **Fingerprint Android 17 lynx — SELESAI 2026-11-22.**
-   Dari LineageOS `lineage-24.0`: `CP3A.261005.002.A1 16269273`
-   (`google/lynx/lynx:17/CP3A.261005.002.A1/16269273:user/release-keys`,
-   plus `BuildSystemDesc` / `BuildSystemFingerprint`), di-push ke fork
-   branch `17` commit `2621fad` bareng update LOS 24.0 (lihat Riwayat).
+1. **Fingerprint Android 17 lynx — SELESAI 2026-11-22, lalu DIUBAH.**
+   Awalnya `CP3A.261005.002.A1 16269273` dari LOS `lineage-24.0` (commit
+   `2621fad`), tapi Pyrtle93 bilang Alch3myOS 17 masih di CP2A — jadi
+   di-revert ke **`CP2A.260705.006 15641320`**
+   (`google/lynx/lynx:17/CP2A.260705.006/15641320:user/release-keys`,
+   plus `BuildSystemDesc` / `BuildSystemFingerprint` dari fix LOS
+   `e578eca` dengan nilai CP2A), commit `2b5a720`. SPL ikut turun ke
+   `2026-07-05`, vendor svn `82`.
 2. **Vendor blob lynx 17.** `vendor/google/lynx/lynx-vendor.mk` wajib ada.
    Di org Alch3myOS-Devices tidak ada `vendor_google_lynx`;
    `lynx.xml` memakai TheMuppets `proprietary_vendor_google_lynx`
@@ -90,3 +93,8 @@ vs `device_google_grizzly` branch `17`.
   didefinisikan di `file.te`, jadi file LOS24 yang mendefinisikan ulang
   tipe yang sama tidak diambil mentah-mentah). `lineage.dependencies`
   tetap dihapus seperti di Alch3my 16.
+- 2026-11-22 08:41 WIB: Pyrtle93: "drop the cp3a stuff haha still on
+  cp2a". Diperbaiki commit `2b5a720`: fingerprint/SPL/svn/proprietary
+  files/vintf/sysconfig di-revert ke state LOS CP2A (`a9af2a0`, Agu 2026).
+  Yang sengaja dipertahankan: rust pin ke CP2A.260705.006, entri
+  `google_build.xml`, dan config face-unlock di overlay (bukan blob CP3A).
