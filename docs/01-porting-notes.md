@@ -43,9 +43,11 @@ vs `device_google_grizzly` branch `17`.
 
 ## PR yang tersisa (jangan di-skip)
 
-1. **Fingerprint Android 17 lynx — BELUM ADA.** Di `alch3my_lynx.mk`
-   masih `TODO_17_BUILD_ID` / `TODO_17_BUILD_NUMBER`. Isi dari stock
-   Android 17 factory image / vendor blob lynx yang dipakai.
+1. **Fingerprint Android 17 lynx — SELESAI 2026-11-22.**
+   Dari LineageOS `lineage-24.0`: `CP3A.261005.002.A1 16269273`
+   (`google/lynx/lynx:17/CP3A.261005.002.A1/16269273:user/release-keys`,
+   plus `BuildSystemDesc` / `BuildSystemFingerprint`), di-push ke fork
+   branch `17` commit `2621fad` bareng update LOS 24.0 (lihat Riwayat).
 2. **Vendor blob lynx 17.** `vendor/google/lynx/lynx-vendor.mk` wajib ada.
    Di org Alch3myOS-Devices tidak ada `vendor_google_lynx`;
    `lynx.xml` memakai TheMuppets `proprietary_vendor_google_lynx`
@@ -76,3 +78,15 @@ vs `device_google_grizzly` branch `17`.
 - 2026-11-22 08:20 WIB: draft di-push ke fork `hiemzalhuda/device_google_lynx`
   branch `17`, commit `e745851`.
 - 2026-11-22: repo persiapan build ini dibuat (`alch3my-lynx-build`).
+- 2026-11-22 08:29 WIB: Pyrtle93 balas di DM: "You forgot to add changes
+  from los updating trees to 17". Diperbaiki di commit `2621fad` (41 file):
+  20 commit LOS `lineage-23.2` → `lineage-24.0` diterapkan — fingerprint
+  CP3A, SPL 2026-10-05, vintf, overlay, properties, proprietary files,
+  sysconfig, `sepolicy/system_ext`, BoardConfig. File LOS diambil verbatim
+  kecuali yang sengaja dipertahankan Alch3my: `device-lynx.mk` (tambah
+  `Alch3mySettingsLynx`), `aosp_lynx.mk` (tambah attestation), dan sepolicy
+  yang namanya di-rename Alch3my (`hal_face.te` dst — perubahan LOS
+  di-port ke file rename itu, bukan di-overwrite; tipe sepolicy Alch3my
+  didefinisikan di `file.te`, jadi file LOS24 yang mendefinisikan ulang
+  tipe yang sama tidak diambil mentah-mentah). `lineage.dependencies`
+  tetap dihapus seperti di Alch3my 16.
