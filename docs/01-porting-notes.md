@@ -51,10 +51,13 @@ vs `device_google_grizzly` branch `17`.
    plus `BuildSystemDesc` / `BuildSystemFingerprint` dari fix LOS
    `e578eca` dengan nilai CP2A), commit `2b5a720`. SPL ikut turun ke
    `2026-07-05`, vendor svn `82`.
-2. **Vendor blob lynx 17.** `vendor/google/lynx/lynx-vendor.mk` wajib ada.
-   Di org Alch3myOS-Devices tidak ada `vendor_google_lynx`;
-   `lynx.xml` memakai TheMuppets `proprietary_vendor_google_lynx`
-   branch `lineage-24.0` (terverifikasi ada).
+2. **Vendor blob lynx 17 — SELESAI 2026-11-22.** `vendor/google/lynx/lynx-vendor.mk`
+   wajib ada. Di org Alch3myOS-Devices tidak ada `vendor_google_lynx`.
+   Pyrtle93 (09:23 WIB): "update vendor as well". Fork
+   `hiemzalhuda/proprietary_vendor_google_lynx` branch `17`, commit
+   `29435f5`: base TheMuppets `bc235c1` (CP2A, Agu 2026) + commit
+   22 Okt `google_build.xml` dan rust pin CP2A; update CP3A 15 Okt
+   TIDAK ikut. `lynx.xml` sudah diarahkan ke fork ini.
 3. **gs-common.** Tidak ada branch `lineage-24.0` di mana pun
    (LineageOS dan Alch3myOS-Devices mentok `lineage-23.2`).
    `lynx.xml` sengaja tidak memasukkannya; bila build gagal karena file

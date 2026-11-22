@@ -15,8 +15,12 @@ kunci signing, tidak ada blob proprietary, dan tidak ada file ZIP di repo ini.
 - **Basis:** Alch3myOS `17` (`android-17.0.0_r1` + `lineage-24.0`), fork dari Lunaris-AOSP / LineageOS
 - **Build pertama:** belum jalan. Draft device tree sudah di-push ke fork
   `hiemzalhuda/device_google_lynx` branch `17`, commit `e745851`.
-- **Server:** jangan sync/build sekarang — server UpCloud lagi rebuild
-  PenguinOS (Obscura) dan disk tinggal ~19 GB (22 Nov 2026 pagi).
+- **Vendor:** fork `hiemzalhuda/proprietary_vendor_google_lynx` branch `17`,
+  commit `29435f5` — blob CP2A.260705.006 (TheMuppets `lineage-24.0`
+  sudah CP3A, di-revert atas perintah Pyrtle93, 22 Nov 2026).
+- **Server:** jangan sync dulu — Pyrtle93 bilang dia kabari kapan sync
+  (09:23 WIB, 22 Nov 2026). Server UpCloud lagi rebuild PenguinOS
+  (Obscura) dan disk tinggal ~19 GB (22 Nov 2026 pagi).
 
 ## Kenapa ini porting, bukan build resmi
 
