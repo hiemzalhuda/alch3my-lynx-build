@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- alch3my-17 local manifest: Pixel 7a / lynx -->
+<!-- For Alch3myOS branch 17. Copy to .repo/local_manifests/lynx.xml
+     in the Alch3myOS source root, then repo sync. -->
+<!-- Device tree is the user's fork (branch 17, with alch3my_lynx.mk),
+     NOT upstream Alch3myOS-Devices/device_google_lynx (branch 16 only). -->
+<!-- gs201 + lynx-kernels + vendor: LineageOS / TheMuppets lineage-24.0,
+     same pins as infinity-lynx-build / penguin-lynx-build. -->
+<!-- KNOWN GAPS (2026-11-22, verified via GitHub API):
+     - device/google/gs-common has NO lineage-24.0 branch anywhere
+       (LineageOS and Alch3myOS-Devices both stop at lineage-23.2).
+       It is NOT listed here on purpose; if the build fails on a
+       missing gs-common file, port it or pin 23.2 and test.
+     - Alch3myOS-Devices/device_google_gs201 and
+       device_google_lynx-kernels have only branch 16, so the
+       LineageOS lineage-24.0 versions below are used instead.
+     - vendor/google/lynx has no Alch3myOS repo; TheMuppets is used. -->
+<manifest>
+  <!-- Device tree lynx (fork hiemzalhuda, branch 17) -->
+  <project name="hiemzalhuda/device_google_lynx" path="device/google/lynx" remote="github" revision="17" />
+
+  <!-- SoC Tensor G2 (LineageOS stock, lineage-24.0) -->
+  <project name="LineageOS/android_device_google_gs201" path="device/google/gs201" remote="github" revision="lineage-24.0" />
+
+  <!-- Prebuilt kernels for lynx (6.1 Image.lz4, modules, dtbo) -->
+  <project name="LineageOS/android_device_google_lynx-kernels" path="device/google/lynx-kernels" remote="github" revision="lineage-24.0" />
+
+  <!-- Vendor blob lynx (TheMuppets, lineage-24.0) -->
+  <project name="TheMuppets/proprietary_vendor_google_lynx" path="vendor/google/lynx" remote="github" revision="lineage-24.0" />
+
+  <!-- hardware/google/pixel (LineageOS, lineage-24.0) — needed by
+       device/google/gs201/common.mk (rebalance_interrupts), same
+       lesson as penguin-lynx-build build #1. -->
+  <project name="LineageOS/android_hardware_google_pixel" path="hardware/google/pixel" remote="github" revision="lineage-24.0" />
+</manifest>

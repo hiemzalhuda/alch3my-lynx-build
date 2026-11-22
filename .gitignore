@@ -1,0 +1,11 @@
+# Never commit signing keys, build output, or kernel binaries.
+security/
+*.pem
+*.pk8
+*.key
+*.bak
+*.orig
+*.ko
+boot.img
+dtbo.img
+out/
