@@ -82,6 +82,9 @@ NOW_EPOCH="$(date +%s)"
 
 SIZE="$(du -sh "$TREE" 2>/dev/null | cut -f1)"
 FREE="$(df -h / 2>/dev/null | tail -1 | awk '{print $4}')"
+LOAD="$(cut -d' ' -f1 /proc/loadavg 2>/dev/null)"
+CORES="$(nproc 2>/dev/null)"
+RAM_LINE="$(free -h 2>/dev/null | awk '/^Mem:/ {print $3"/"$2}')"
 [ -n "$PCT" ] && PCT_TXT=" ${PCT}%" || PCT_TXT=""
 
 # --- format laporan yang rapi (parse_mode HTML Telegram) ---
@@ -118,6 +121,7 @@ MSG="<b>${EMOJI} ${NAME} — ${PHASE}${PCT_TXT}</b>"
 ${ETA_TXT}"
 MSG="$MSG
 💾 Tree ${SIZE} · Disk sisa ${FREE}
+🖥️ Load ${LOAD} (${CORES} CPU) · RAM ${RAM_LINE}
 🕐 ${NOW}"
 if [ "$PHASE" = "SELESAI" ] && [ -n "$ZIP" ]; then
   SHA="$(sha256sum "$ZIP" 2>/dev/null | cut -d' ' -f1)"
