@@ -14,13 +14,16 @@ kunci signing, tidak ada blob proprietary, dan tidak ada file ZIP di repo ini.
 - **Target:** Pixel 7a (`lynx`), Tensor G2 (`gs201`), Android 17
 - **Basis:** Alch3myOS `17` (`android-17.0.0_r1` + `lineage-24.0`), fork dari Lunaris-AOSP / LineageOS
 - **Build pertama:** belum jalan. Draft device tree sudah di-push ke fork
-  `hiemzalhuda/device_google_lynx` branch `17`, commit `e745851`.
+  `hiemzalhuda/device_google_lynx` branch `17`, head `2b5a720` (CP2A).
 - **Vendor:** fork `hiemzalhuda/proprietary_vendor_google_lynx` branch `17`,
   commit `29435f5` — blob CP2A.260705.006 (TheMuppets `lineage-24.0`
   sudah CP3A, di-revert atas perintah Pyrtle93, 22 Nov 2026).
-- **Server:** jangan sync dulu — Pyrtle93 bilang dia kabari kapan sync
-  (09:23 WIB, 22 Nov 2026). Server UpCloud lagi rebuild PenguinOS
-  (Obscura) dan disk tinggal ~19 GB (22 Nov 2026 pagi).
+- **Server:** Pyrtle93 kasih lampu hijau sync 23 Nov 2026 18:00 WIB
+  ("You can sync the source now and try building"). Sync dimulai
+  18:53 WIB di `/root/alch3my` (UpCloud). Syaratnya: tree Infinity-X
+  `/root/infinityx` (395 GB) dihapus atas perintah user setelah fix 4.2
+  ke-push ke GitHub (`74c85a8`) — disk jadi 408 GB sisa. Kunci signing
+  aman di `/root/.android-certs/`, backup offline tetap belum dilakukan.
 
 ## Kenapa ini porting, bukan build resmi
 
@@ -37,12 +40,12 @@ disamakan adalah struktur file produk, bukan isi hardware.
 
 | File | Fungsi |
 | --- | --- |
-| `lynx.xml` | Local manifest: device tree (fork branch 17), gs201, kernel prebuilt, vendor blob `lynx`, hardware/google/pixel — semua di-pin ke `lineage-24.0`, kecuali device tree |
+| `lynx.xml` | Local manifest: device tree (fork branch 17), gs201, kernel prebuilt, vendor blob `lynx` — semua di-pin ke `lineage-24.0`, kecuali device tree. `hardware/google/pixel` TIDAK ada di sini — sudah ada di manifest bawaan Alch3myOS (`snippets/lineage.xml`), menambahkannya bikin sync gagal "duplicate path" (23 Nov 2026) |
 | `device/alch3my_lynx.mk` | Product makefile baru `alch3my_lynx`, pola `alch3my_grizzly.mk`. Sudah ada di fork device tree; file di sini salinan referensi |
 | `device/AndroidProducts.mk` | Registrasi product makefile (`aosp_lynx`, `alch3my_lynx`) |
 | `device/aosp_lynx.mk` | Identitas produk `Pixel 7a` / brand `google`, hardware tetap `gs201` |
-| `alch3my-setup.sh` | Cek pasca-sync buat `lynx` (fingerprint, vendor, branch) — jalankan sebelum build |
-| `scripts/build-alch3my-lynx.sh` | Perintah build low-RAM: `alch3my_lynx-bp4a-user`, `m bacon`, `-j2` |
+| `alch3my-setup.sh` | Cek + perbaikan pasca-sync buat `lynx` (kernel prebuilt, pixel-sepolicy, gen_mterp.py, duplikat GMS) — jalankan sebelum build |
+| `scripts/build-alch3my-lynx.sh` | Perintah build low-RAM: coba lunch `alch3my_lynx-user` / `-userdebug` / `-bp4a-*` berurutan (target lunch belum terverifikasi — repo Infinity-X/Penguin yang terbukti build pakai tanpa `-bp4a-`), `m bacon`, `-j2` |
 | `docs/01-porting-notes.md` | Catatan porting: komparasi lynx vs grizzly, apa yang disamakan, apa yang tetap lynx, dan PR yang tersisa |
 
 ## Cara build (ringkas)
@@ -53,7 +56,8 @@ cp lynx.xml .repo/local_manifests/lynx.xml
 repo sync -c --force-sync -j$(nproc --all)
 ./alch3my-setup.sh
 source build/envsetup.sh
-lunch alch3my_lynx-bp4a-user
+lunch alch3my_lynx-user        # atau variant lain yang muncul di daftar lunch;
+                               # JANGAN tebak -bp4a- (lihat audit 23 Nov di bawah)
 m bacon
 ```
 

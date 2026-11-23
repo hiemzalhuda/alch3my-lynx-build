@@ -30,8 +30,7 @@
        to CP2A.260705.006 (commit 29435f5, 2026-11-22). -->
   <project name="hiemzalhuda/proprietary_vendor_google_lynx" path="vendor/google/lynx" remote="github" revision="17" />
 
-  <!-- hardware/google/pixel (LineageOS, lineage-24.0) — needed by
-       device/google/gs201/common.mk (rebalance_interrupts), same
-       lesson as penguin-lynx-build build #1. -->
-  <project name="LineageOS/android_hardware_google_pixel" path="hardware/google/pixel" remote="github" revision="lineage-24.0" />
+  <!-- hardware/google/pixel: SUDAH ada di manifest bawaan Alch3myOS
+       (snippets/lineage.xml) — jangan ditambah lagi di sini, repo
+       sync gagal "duplicate path" (terjadi 2026-11-23). -->
 </manifest>
