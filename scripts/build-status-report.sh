@@ -134,6 +134,7 @@ SEND=0
 [ "$PHASE" != "$LAST_PHASE" ] && SEND=1
 if [ -n "$PCT" ] && [ -n "$LAST_PCT" ] && [ "$((PCT - LAST_PCT))" -ge 5 ]; then SEND=1; fi
 [ "$PHASE" = "SELESAI" ] || [ "$PHASE" = "GAGAL" ] && SEND=1
+[ "${FORCE:-0}" = "1" ] && SEND=1  # dipakai bot-status-listener saat user ketik /status
 [ "$SEND" -eq 0 ] && { echo "skip (tidak ada perubahan): $PHASE$PCT_TXT"; exit 0; }
 
 if [ -f "$TOKEN_FILE" ]; then
