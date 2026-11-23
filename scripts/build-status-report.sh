@@ -75,17 +75,57 @@ elif [ -f "$SYNC_LOG" ] && grep -qi "fatal\|^error\|UpdateManifestError" "$SYNC_
   DETAIL="sync: $(grep -i -m1 'fatal\|error' "$SYNC_LOG" | cut -c1-120)"
 fi
 
-SIZE="$(du -sh "$TREE" 2>/dev/null | cut -f1)"
-FREE="$(df -h / 2>/dev/null | tail -1 | awk '{print $4}')"
-[ -n "$PCT" ] && PCT_TXT=" ${PCT}%" || PCT_TXT=""
-MSG="$NAME — $PHASE$PCT_TXT
-$DETAIL
-Tree: $SIZE · Disk sisa: $FREE · $NOW"
-
-# --- kirim hanya bila ada perubahan berarti ---
+# --- state laporan terakhir (dibaca di awal: dipakai ETA + anti-spam) ---
 LAST_PHASE=""; LAST_PCT=""; LAST_SENT=0
 [ -f "$STATE" ] && . "$STATE" 2>/dev/null
 NOW_EPOCH="$(date +%s)"
+
+SIZE="$(du -sh "$TREE" 2>/dev/null | cut -f1)"
+FREE="$(df -h / 2>/dev/null | tail -1 | awk '{print $4}')"
+[ -n "$PCT" ] && PCT_TXT=" ${PCT}%" || PCT_TXT=""
+
+# --- format laporan yang rapi (parse_mode HTML Telegram) ---
+case "$PHASE" in
+  SYNC)    EMOJI="📥" ;;
+  SOONG)   EMOJI="⚙️" ;;
+  BUILD)   EMOJI="🔨" ;;
+  SELESAI) EMOJI="✅" ;;
+  GAGAL)   EMOJI="❌" ;;
+  *)       EMOJI="💤" ;;
+esac
+BAR=""
+if [ -n "$PCT" ]; then
+  FILLED=$((PCT * 12 / 100))
+  EMPTY=$((12 - FILLED))
+  BAR="$(printf '▓%.0s' $(seq 1 "$FILLED" 2>/dev/null))$(printf '░%.0s' $(seq 1 "$EMPTY" 2>/dev/null))"
+fi
+# ETA dari laju perubahan % sejak laporan terakhir (bila ada)
+ETA_TXT=""
+if [ -n "$PCT" ] && [ -n "$LAST_PCT" ] && [ "$LAST_SENT" -gt 0 ]; then
+  ELAPSED_MIN=$(( (NOW_EPOCH - LAST_SENT) / 60 ))
+  DPCT=$((PCT - LAST_PCT))
+  if [ "$ELAPSED_MIN" -gt 0 ] && [ "$DPCT" -gt 0 ]; then
+    ETA_MIN=$(( (100 - PCT) * ELAPSED_MIN / DPCT ))
+    ETA_TXT="⏳ ETA ~${ETA_MIN} mnt"
+  fi
+fi
+MSG="<b>${EMOJI} ${NAME} — ${PHASE}${PCT_TXT}</b>"
+[ -n "$BAR" ] && MSG="$MSG
+<code>${BAR} ${PCT}%</code>"
+[ -n "$DETAIL" ] && MSG="$MSG
+📦 ${DETAIL}"
+[ -n "$ETA_TXT" ] && MSG="$MSG
+${ETA_TXT}"
+MSG="$MSG
+💾 Tree ${SIZE} · Disk sisa ${FREE}
+🕐 ${NOW}"
+if [ "$PHASE" = "SELESAI" ] && [ -n "$ZIP" ]; then
+  SHA="$(sha256sum "$ZIP" 2>/dev/null | cut -d' ' -f1)"
+  [ -n "$SHA" ] && MSG="$MSG
+🔑 SHA256: <code>${SHA}</code>"
+fi
+
+# --- kirim hanya bila ada perubahan berarti ---
 SEND=0
 [ "$PHASE" != "$LAST_PHASE" ] && SEND=1
 if [ -n "$PCT" ] && [ -n "$LAST_PCT" ] && [ "$((PCT - LAST_PCT))" -ge 5 ]; then SEND=1; fi
@@ -94,7 +134,7 @@ if [ -n "$PCT" ] && [ -n "$LAST_PCT" ] && [ "$((PCT - LAST_PCT))" -ge 5 ]; then 
 
 if [ -f "$TOKEN_FILE" ]; then
   TOKEN="$(head -1 "$TOKEN_FILE" | tr -d '[:space:]')"
-  RESP="$(curl -s --max-time 20 -X POST "https://api.telegram.org/bot${TOKEN}/sendMessage" -d "chat_id=${CHAT_ID}" --data-urlencode "text=${MSG}" 2>&1)"
+  RESP="$(curl -s --max-time 20 -X POST "https://api.telegram.org/bot${TOKEN}/sendMessage" -d "chat_id=${CHAT_ID}" -d "parse_mode=HTML" --data-urlencode "text=${MSG}" 2>&1)"
   echo "$RESP" | grep -q '"ok":true' && echo "terkirim: $PHASE$PCT_TXT" || { echo "GAGAL kirim Telegram: $RESP"; exit 1; }
 else
   echo "DRY-RUN (token belum ada di $TOKEN_FILE) — pesan yang akan dikirim:"
